@@ -2,6 +2,7 @@ const express = require("express");
 const moment = require("moment");
 const bcrypt = require("bcrypt");
 const { PrismaClient } = require("@prisma/client");
+const { checkSession } = require("../utils/middleware");
 
 const saltRounds = 10;
 const router = express.Router();
@@ -25,8 +26,10 @@ router.post("/", async (req, res) => {
       })
       .then((user) => {
         if (!user) return res.status(404).json({ message: "User not found." });
+
         bcrypt.compare(password, user.password, function (err, result) {
           if (result) {
+            req.session.user = { username: user.username, email: user.email };
             return res.json({ username: user.username, email: user.email });
           } else {
             return res.status(500).json({ message: "Invalid credentials" });
@@ -42,8 +45,10 @@ router.post("/", async (req, res) => {
 });
 
 //
-router.post("/", async (req, res) => {
+router.get("/random", checkSession, async (req, res) => {
   try {
+    console.log(req.body.bunda);
+    return res.send("ok");
   } catch (err) {
     res.status(500).json({ message: "An error has occour" });
   }

@@ -12,6 +12,21 @@ model users {
   username  String   @unique @db.VarChar
   email     String   @unique @db.VarChar
   password  String   @db.VarChar
-  createdAt DateTime @db.Date
-  token     String   @db.VarChar
+  createdAt DateTime @default(now())
+  token     String?  @db.VarChar
+  role      roles    @default(USER)
+}
+
+enum roles {
+  ADMIN
+  GOD
+  GUEST
+  USER
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
 }

@@ -1,6 +1,25 @@
 const express = require("express");
+const session = require("express-session");
+const { PrismaSessionStore } = require("@quixo3/prisma-session-store");
+
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+require("dotenv").config();
 
 const app = express();
+app.use(
+  session({
+    secret: process.env.SESSION_KEY,
+    cookie: {},
+    resave: false,
+    saveUninitialized: false,
+    store: new PrismaSessionStore(prisma, {
+      checkPeriod: 2 * 60 * 1000, //ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
+  })
+);
 
 //Middleware
 app.use(express.json()); // bodyparser json
