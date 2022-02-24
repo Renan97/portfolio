@@ -10,7 +10,6 @@ import {
   NavUl,
   NavCloseDiv,
 } from "./NavbarElements";
-import { BrowserRouter as Router, Route } from "react-router-dom";
 import { RiCloseFill } from "react-icons/ri";
 
 function Navbar() {
@@ -21,12 +20,12 @@ function Navbar() {
       <Bars onClick={() => setOpenedSideMenu(true)}></Bars>
       <NavMenu>
         {MenuOptions.map((option) => (
-          <NavLink to={option.path}>
+          <NavLink key={option.name} to={option.path}>
             <option.icon></option.icon>
             {option.name}
           </NavLink>
         ))}
-        <NavBtnLink to="/SignIn">Sign In</NavBtnLink>
+        <NavBtnLink to="/signin">Sign In</NavBtnLink>
       </NavMenu>
       <SideMenu style={{ right: openedSideMenu ? "0px" : "-41%" }}>
         <NavCloseDiv onClick={() => setOpenedSideMenu(false)}>
@@ -34,10 +33,9 @@ function Navbar() {
         </NavCloseDiv>
         <NavUl>
           {MenuOptions.map((option) => (
-            <li>
+            <li key={option.name}>
               <NavLink to={option.path}>
-                <option.icon></option.icon>
-                {option.name}
+                <option.icon></option.icon> {option.name}
               </NavLink>
             </li>
           ))}

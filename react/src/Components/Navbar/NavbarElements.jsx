@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { FaBars, FaLock, FaLockOpen } from "react-icons/fa";
 
 export const Nav = styled.nav`
-  height: 40px;
-  background: #060606ff;
+  height: 50px;
   color: #fff;
   display: flex;
   justify-content: space-between;
@@ -14,31 +13,39 @@ export const Nav = styled.nav`
 
 export const NavLink = styled(Link)`
   font-size: 16px;
+  display: flex;
+  align-items: center;
   color: white;
-  padding: 1.8rem;
+  padding: 0 1.8rem;
   cursor: pointer;
   text-decoration: none;
   outline: none;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
   @media screen and (max-width: 768px) {
-    padding: 0;
+    padding: 0 1.8rem;
   }
 `;
 export const NavBtnLink = styled(Link)`
   font-size: 16px;
-  color: black;
+  font-weight: bold;
+  color: gray;
   background: white;
   border-radius: 3px;
-  padding: 10px 1.8rem;
+  padding: 0px 1.8rem;
   cursor: pointer;
   text-decoration: none;
   outline: none;
+  align-items: center;
+  justify-content: center;
   @media screen and (max-width: 768px) {
     padding: 0;
   }
 `;
 export const Bars = styled(FaBars)`
   color: #fff;
-  padding: 0 1.8rem;
+  margin: 0 1.8rem;
   cursor: pointer;
   display: none;
   @media screen and (max-width: 768px) {
@@ -46,6 +53,10 @@ export const Bars = styled(FaBars)`
   }
 `;
 export const NavMenu = styled.div`
+  height: 30px;
+  line-height: 30px;
+  display: flex;
+
   @media screen and (max-width: 768px) {
     display: none;
   }
@@ -54,15 +65,15 @@ export const NavMenu = styled.div`
 export const SideMenu = styled.div`
   width: 40%;
   height: fit-content;
-  display: block;
-  position: absolute;
+  position: fixed;
+  display: none;
   top: 0;
   right: -20%;
   background: #060606ff;
   transition: 0.6s ease-in-out;
 
-  @media screen and (min-width: 768) {
-    display: none;
+  @media screen and (max-width: 768px) {
+    display: block;
   }
 `;
 export const NavUl = styled.ul`
@@ -80,20 +91,26 @@ export const NavCloseDiv = styled.div`
     width: 25px;
   }
 `;
+const iconLock = styled(FaLock)`
+  margin-right: 3px;
+`;
+const iconLockOpen = styled(FaLockOpen)`
+  margin-right: 3px;
+`;
 export const MenuOptions = [
   {
     name: "Home",
-    path: "/home",
-    icon: FaLockOpen,
+    path: "/",
+    icon: iconLockOpen,
   },
   {
     name: "About",
     path: "/about",
-    icon: FaLockOpen,
+    icon: iconLockOpen,
   },
   {
-    name: "Lock",
-    path: "/lock",
-    icon: FaLock,
+    name: "Locked",
+    path: "/locked",
+    icon: iconLock,
   },
 ];
