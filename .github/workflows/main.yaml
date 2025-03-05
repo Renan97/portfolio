@@ -1,4 +1,4 @@
-name: CI/CD Deployment for Next.js to Linux Server
+name: Deploy Next.js App to Linux Server
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
     # Step 1: Checkout the code from the repository
@@ -19,27 +19,20 @@ jobs:
       run: |
         npm install
         npm run build
-      working-directory: ./spa  # Your Next.js app is in this subdirectory
+      working-directory: ./spa
 
-    # Step 3: Deploy the .next Directory to the Server
-    - name: Deploy Next.js Build to Server
+    # Step 3: Deploy Build Artifacts to Server
+    - name: Deploy Build Artifacts
       run: |
-        # Navigate to the 'spa' directory
-        cd spa
-
-        # Compress the '.next' directory
+        # Compress the .next directory
         tar -czf next.tar.gz .next
-
-        # Return to root directory and securely copy the tar.gz file to the server
-        cd ..
-        scp -o StrictHostKeyChecking=no spa/next.tar.gz ${{ secrets.USER }}@${{ secrets.SERVER_IP }}:/var/www/html/rstation.ddns.net
-
-        # SSH into the server and extract the tar.gz file
+        # Securely copy the tar.gz file to the server
+        scp -o StrictHostKeyChecking=no ./next.tar.gz ${{ secrets.USER }}@${{ secrets.SERVER_IP }}:/path/to/deployment/directory
+        # SSH into the server and extract files
         ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-        cd /var/www/html/rstation.ddns.net
+        cd /path/to/deployment/directory
         tar -xzf next.tar.gz
         rm next.tar.gz
-
-        # Restart the app (assuming you're using PM2 or a similar tool)
-        pm2 restart portfolio || pm2 start npm --name "portfolio" -- start
+        pm2 restart app-name || pm2 start npm --name "app-name" -- start
         EOF
+      working-directory: ./spa
