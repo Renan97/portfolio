@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     # Step 1: Checkout the code from the repository
@@ -19,16 +19,20 @@ jobs:
       run: |
         npm install
         npm run build
-      working-directory: ./spa  # Update this if your Next.js app is in a subdirectory
+      working-directory: ./spa  # Your Next.js app is in this subdirectory
 
     # Step 3: Deploy the .next Directory to the Server
     - name: Deploy Next.js Build to Server
       run: |
+        # Navigate to the 'spa' directory
+        cd spa
+
         # Compress the '.next' directory
         tar -czf next.tar.gz .next
 
-        # Securely copy the tar.gz file to the server
-        scp -o StrictHostKeyChecking=no next.tar.gz ${{ secrets.USER }}@${{ secrets.SERVER_IP }}:/var/www/html/rstation.ddns.net
+        # Return to root directory and securely copy the tar.gz file to the server
+        cd ..
+        scp -o StrictHostKeyChecking=no spa/next.tar.gz ${{ secrets.USER }}@${{ secrets.SERVER_IP }}:/var/www/html/rstation.ddns.net
 
         # SSH into the server and extract the tar.gz file
         ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.SERVER_IP }} << 'EOF'
@@ -38,5 +42,4 @@ jobs:
 
         # Restart the app (assuming you're using PM2 or a similar tool)
         pm2 restart portfolio || pm2 start npm --name "portfolio" -- start
-
-        
+        EOF
