@@ -1,0 +1,42 @@
+name: CI/CD Deployment for Next.js to Linux Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Install Dependencies and Build the Next.js App
+    - name: Install Dependencies and Build
+      run: |
+        npm install
+        npm run build
+      working-directory: ./  # Update this if your Next.js app is in a subdirectory
+
+    # Step 3: Deploy the .next Directory to the Server
+    - name: Deploy Next.js Build to Server
+      run: |
+        # Compress the '.next' directory
+        tar -czf next.tar.gz .next
+
+        # Securely copy the tar.gz file to the server
+        scp -o StrictHostKeyChecking=no next.tar.gz ${{ secrets.USER }}@${{ secrets.SERVER_IP }}:/var/www/html/rstation.ddns.net
+
+        # SSH into the server and extract the tar.gz file
+        ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+        cd /var/www/html/rstation.ddns.net
+        tar -xzf next.tar.gz
+        rm next.tar.gz
+
+        # Restart the app (assuming you're using PM2 or a similar tool)
+        pm2 restart portfolio || pm2 start npm --name "portfolio" -- start
+
+        
