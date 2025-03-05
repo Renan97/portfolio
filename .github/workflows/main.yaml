@@ -19,7 +19,7 @@ jobs:
       run: |
         npm install
         npm run build
-      working-directory: ./  # Update this if your Next.js app is in a subdirectory
+      working-directory: ./spa  # Update this if your Next.js app is in a subdirectory
 
     # Step 3: Deploy the .next Directory to the Server
     - name: Deploy Next.js Build to Server
