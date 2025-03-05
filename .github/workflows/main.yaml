@@ -14,25 +14,28 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Install Dependencies and Build the Next.js App
+    # Step 2: Install Dependencies and Build
     - name: Install Dependencies and Build
       run: |
         npm install
         npm run build
       working-directory: ./spa
 
-    # Step 3: Deploy Build Artifacts to Server
-    - name: Deploy Build Artifacts
+    # Step 3: Setup SSH
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    # Step 4: Deploy Build Artifacts to Server
+    - name: Deploy Next.js Build
       run: |
-        # Compress the .next directory
+        cd spa
         tar -czf next.tar.gz .next
-        # Securely copy the tar.gz file to the server
-        scp -o StrictHostKeyChecking=no ./next.tar.gz ${{ secrets.USER }}@${{ secrets.SERVER_IP }}:/path/to/deployment/directory
-        # SSH into the server and extract files
+        scp -o StrictHostKeyChecking=no next.tar.gz ${{ secrets.USER }}@${{ secrets.SERVER_IP }}:/var/www/html/rstation.ddns.net
         ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-        cd /path/to/deployment/directory
+        cd /var/www/html/rstation.ddns.net
         tar -xzf next.tar.gz
         rm next.tar.gz
         pm2 restart app-name || pm2 start npm --name "app-name" -- start
         EOF
-      working-directory: ./spa
